@@ -1,0 +1,230 @@
+@import './variables.css';
+
+/* Global Resets */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: background-color var(--transition-speed) var(--transition-ease),
+              color var(--transition-speed) var(--transition-ease);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* AntD overrides for Google Tasks Look */
+.ant-layout {
+  background-color: var(--bg-secondary) !important;
+}
+
+.ant-layout-header {
+  background-color: var(--bg-primary) !important;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 24px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px !important;
+  transition: background-color var(--transition-speed) var(--transition-ease),
+              border-color var(--transition-speed) var(--transition-ease);
+}
+
+.ant-layout-sider {
+  background-color: var(--bg-secondary) !important;
+  border-right: 1px solid var(--border-color);
+  transition: all var(--transition-speed) var(--transition-ease) !important;
+}
+
+.ant-menu {
+  background: transparent !important;
+  border-inline-end: none !important;
+}
+
+.ant-menu-item {
+  border-radius: 0 24px 24px 0 !important;
+  margin-inline: 0 8px !important;
+  width: calc(100% - 8px) !important;
+  font-weight: 500;
+  color: var(--text-secondary) !important;
+}
+
+.ant-menu-item-selected {
+  background-color: #e8f0fe !important;
+  color: var(--primary-color) !important;
+}
+
+body.dark-mode .ant-menu-item-selected {
+  background-color: #1a2736 !important;
+  color: #8ab4f8 !important;
+}
+
+/* Minimal Checkbox (Circle representation) */
+.task-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--text-tertiary);
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-speed) var(--transition-ease);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.task-checkbox:hover {
+  border-color: var(--primary-color);
+  background-color: rgba(26, 115, 232, 0.05);
+}
+
+.task-checkbox.completed {
+  border-color: var(--primary-color);
+  background-color: var(--primary-color);
+}
+
+.task-checkbox.completed::after {
+  content: '';
+  width: 5px;
+  height: 9px;
+  border: 2px solid #fff;
+  border-left: 0;
+  border-top: 0;
+  transform: rotate(45deg) translate(-1px, -1px);
+  position: absolute;
+}
+
+/* Task Title Completion Strike-through */
+.task-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: all var(--transition-speed) var(--transition-ease);
+  cursor: pointer;
+}
+
+.task-title.completed {
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+}
+
+/* Custom Card & Lists */
+.task-card-container {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  margin-bottom: 8px;
+  padding: 12px 16px;
+  box-shadow: 0 1px 2px 0 rgba(60,64,67,0.1);
+  transition: transform 0.2s, box-shadow var(--transition-speed);
+  position: relative;
+}
+
+.task-card-container:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: var(--border-hover);
+}
+
+.task-card-dragging {
+  box-shadow: var(--shadow-md) !important;
+  opacity: 0.9;
+  transform: scale(1.02);
+  border-color: var(--primary-color) !important;
+}
+
+/* Borderless inputs for title/description (Google Tasks style) */
+.borderless-input {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  color: var(--text-primary) !important;
+}
+
+.borderless-input:focus {
+  border-bottom: 2px solid var(--primary-color) !important;
+  border-radius: 0 !important;
+}
+
+.borderless-textarea {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  resize: none !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Keyboard Shortcuts Helper Overlay */
+.keyboard-helper {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  z-index: 1000;
+  transition: all 0.2s;
+}
+
+.keyboard-helper:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+/* Slide Drawer Overlay overrides for theme integrity */
+.dark-theme-drawer .ant-drawer-content {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+.dark-theme-drawer .ant-drawer-header {
+  border-bottom: 1px solid var(--border-color) !important;
+  background-color: var(--bg-primary) !important;
+}
+.dark-theme-drawer .ant-drawer-title {
+  color: var(--text-primary) !important;
+}
+
+/* Confetti overlay */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+}
