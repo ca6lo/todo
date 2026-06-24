@@ -228,3 +228,50 @@ body.dark-mode .ant-menu-item-selected {
   pointer-events: none;
   z-index: 9999;
 }
+
+/* Touch Target and Responsive Optimizations for Mobile */
+@media (max-width: 767px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+  
+  .mobile-full-width {
+    width: 100% !important;
+  }
+
+  /* Ensure content padding is compact on mobile devices */
+  .ant-layout-content {
+    padding: 16px !important;
+  }
+
+  /* Make interactive components easily tappable (minimum height 44px) */
+  .ant-btn:not(.ant-btn-sm):not(.list-action-btn),
+  .ant-input:not(.ant-input-sm):not(.borderless-input),
+  .ant-select:not(.ant-select-sm) .ant-select-selector,
+  .ant-segmented {
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  /* Prevent automatic iOS zoom by ensuring text inputs have font-size >= 16px */
+  .ant-input,
+  .ant-select,
+  .ant-segmented {
+    font-size: 16px !important;
+  }
+
+  /* Increase checkbox size for easier tapping */
+  .task-checkbox {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .task-checkbox.completed::after {
+    width: 6px !important;
+    height: 11px !important;
+    border-width: 2.5px !important;
+    transform: rotate(45deg) translate(0px, -1px) !important;
+  }
+}
+

@@ -1,13 +1,11 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
-import { Layout, Menu, Input, Button, Modal, Dropdown, Space, Progress, Tooltip } from 'antd';
+import { useContext, useState, useRef, useEffect } from 'react';
+import { Layout, Input, Button, Modal, Dropdown, Progress, Tooltip } from 'antd';
 import {
-  UnorderedListOutlined,
   PlusOutlined,
   MoreOutlined,
   EditOutlined,
   DeleteOutlined,
-  FolderOpenOutlined,
-  CheckCircleOutlined
+  FolderOpenOutlined
 } from '@ant-design/icons';
 import { TaskContext } from '../../context/TaskContext';
 
@@ -46,7 +44,7 @@ export const Sidebar = ({ collapsed, mobileOpen, onMobileClose }) => {
 
   const handleCreateList = () => {
     if (newListVal.trim()) {
-      const newId = createList(newListVal.trim());
+      createList(newListVal.trim());
       setNewListVal('');
       setIsCreating(false);
       if (onMobileClose) onMobileClose();
@@ -187,7 +185,7 @@ export const Sidebar = ({ collapsed, mobileOpen, onMobileClose }) => {
                 size={14}
                 showInfo={false}
                 strokeColor="var(--primary-color)"
-                trailColor="var(--border-color)"
+                railColor="var(--border-color)"
               />
             </div>
           </Tooltip>
@@ -289,12 +287,20 @@ export const Sidebar = ({ collapsed, mobileOpen, onMobileClose }) => {
           percent={Math.round((tasks.filter(t => t.completed).length / (tasks.length || 1)) * 100)} 
           showInfo={false}
           strokeColor="var(--primary-color)"
-          trailColor="var(--border-color)"
+          railColor="var(--border-color)"
           size="small"
         />
       </div>
     </div>
   );
+
+  if (mobileOpen) {
+    return (
+      <div style={{ height: '100%', backgroundColor: 'var(--bg-primary)', display: 'flex', flexDirection: 'column' }}>
+        {sidebarContent}
+      </div>
+    );
+  }
 
   return (
     <Sider

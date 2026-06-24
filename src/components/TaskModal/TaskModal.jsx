@@ -1,23 +1,28 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Drawer, Form, Input, DatePicker, Select, Button, Checkbox, Space, Divider, Typography } from 'antd';
+import { useContext, useState } from 'react';
+import { Drawer, Input, DatePicker, Select, Button, Checkbox, Space, Divider, Typography, Grid } from 'antd';
 import {
   DeleteOutlined,
   PlusOutlined,
-  CloseOutlined,
   FolderOutlined,
   FlagOutlined,
-  CalendarOutlined,
-  CheckCircleOutlined
+  CalendarOutlined
 } from '@ant-design/icons';
 import { TaskContext } from '../../context/TaskContext';
 import dayjs from 'dayjs';
 
+const generateSubtaskId = () => `sub-${Date.now()}`;
+
 const { TextArea } = Input;
 const { Text } = Typography;
+const { useBreakpoint } = Grid;
 
 export const TaskModal = ({ taskId, visible, onClose }) => {
   const { tasks, lists, updateTask, deleteTask, moveTaskToList, isDarkMode } = useContext(TaskContext);
   const [subtaskTitle, setSubtaskTitle] = useState('');
+
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
+  const isXs = !screens.sm;
 
   const task = tasks.find(t => t.id === taskId);
 
@@ -49,7 +54,7 @@ export const TaskModal = ({ taskId, visible, onClose }) => {
     if (!subtaskTitle.trim()) return;
 
     const newSubtask = {
-      id: `sub-${Date.now()}`,
+      id: generateSubtaskId(),
       title: subtaskTitle.trim(),
       completed: false
     };
@@ -84,13 +89,7 @@ export const TaskModal = ({ taskId, visible, onClose }) => {
     onClose();
   };
 
-  const getPriorityTagColor = (prio) => {
-    switch (prio) {
-      case 'High': return 'red';
-      case 'Medium': return 'orange';
-      default: return 'blue';
-    }
-  };
+
 
   return (
     <Drawer
@@ -98,7 +97,7 @@ export const TaskModal = ({ taskId, visible, onClose }) => {
       placement="right"
       onClose={onClose}
       open={visible}
-      width={window.innerWidth < 768 ? '100%' : 460}
+      style={{ width: isMobile ? '100%' : 460 }}
       extra={
         <Space>
           <Button
@@ -106,6 +105,7 @@ export const TaskModal = ({ taskId, visible, onClose }) => {
             danger
             icon={<DeleteOutlined />}
             onClick={handleDeleteTask}
+            style={{ height: isMobile ? '44px' : 'auto', display: 'flex', alignItems: 'center' }}
           >
             Delete Task
           </Button>
@@ -126,40 +126,61 @@ export const TaskModal = ({ taskId, visible, onClose }) => {
         </div>
 
         {/* Info Rows */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* List selection */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <FolderOutlined style={{ color: 'var(--text-tertiary)', width: '20px' }} />
-            <Text style={{ width: '80px', color: 'var(--text-secondary)' }}>List</Text>
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: isXs ? 'column' : 'row', 
+            alignItems: isXs ? 'flex-start' : 'center', 
+            gap: isXs ? '6px' : '12px' 
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: isXs ? '100%' : '110px' }}>
+              <FolderOutlined style={{ color: 'var(--text-tertiary)', width: '20px' }} />
+              <Text style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>List</Text>
+            </div>
             <Select
               value={task.listId}
               onChange={handleListChange}
-              style={{ flex: 1 }}
+              style={{ width: '100%', flex: isXs ? 'none' : 1 }}
               options={lists.map(list => ({ value: list.id, label: list.name }))}
             />
           </div>
 
           {/* Due date picker */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <CalendarOutlined style={{ color: 'var(--text-tertiary)', width: '20px' }} />
-            <Text style={{ width: '80px', color: 'var(--text-secondary)' }}>Due Date</Text>
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: isXs ? 'column' : 'row', 
+            alignItems: isXs ? 'flex-start' : 'center', 
+            gap: isXs ? '6px' : '12px' 
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: isXs ? '100%' : '110px' }}>
+              <CalendarOutlined style={{ color: 'var(--text-tertiary)', width: '20px' }} />
+              <Text style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>Due Date</Text>
+            </div>
             <DatePicker
               value={task.dueDate ? dayjs(task.dueDate) : null}
               onChange={handleDateChange}
-              style={{ flex: 1 }}
+              style={{ width: '100%', flex: isXs ? 'none' : 1 }}
               allowClear
               placeholder="Add due date"
             />
           </div>
 
           {/* Priority selector */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <FlagOutlined style={{ color: 'var(--text-tertiary)', width: '20px' }} />
-            <Text style={{ width: '80px', color: 'var(--text-secondary)' }}>Priority</Text>
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: isXs ? 'column' : 'row', 
+            alignItems: isXs ? 'flex-start' : 'center', 
+            gap: isXs ? '6px' : '12px' 
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: isXs ? '100%' : '110px' }}>
+              <FlagOutlined style={{ color: 'var(--text-tertiary)', width: '20px' }} />
+              <Text style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>Priority</Text>
+            </div>
             <Select
               value={task.priority}
               onChange={handlePriorityChange}
-              style={{ flex: 1 }}
+              style={{ width: '100%', flex: isXs ? 'none' : 1 }}
               options={[
                 { value: 'High', label: '🔴 High' },
                 { value: 'Medium', label: '🟡 Medium' },
@@ -182,11 +203,12 @@ export const TaskModal = ({ taskId, visible, onClose }) => {
             placeholder="Add details..."
             autoSize={{ minRows: 4, maxRows: 8 }}
             style={{
-              padding: '8px',
+              padding: '10px',
               backgroundColor: 'var(--bg-tertiary)',
               border: 'none',
               borderRadius: '8px',
-              color: 'var(--text-primary)'
+              color: 'var(--text-primary)',
+              fontSize: '14px'
             }}
           />
         </div>
@@ -209,7 +231,7 @@ export const TaskModal = ({ taskId, visible, onClose }) => {
                   alignItems: 'center', 
                   gap: '10px',
                   backgroundColor: 'var(--bg-secondary)',
-                  padding: '6px 12px',
+                  padding: isMobile ? '8px 12px' : '6px 12px',
                   borderRadius: '6px',
                   border: '1px solid var(--border-color)'
                 }}
@@ -217,6 +239,7 @@ export const TaskModal = ({ taskId, visible, onClose }) => {
                 <Checkbox
                   checked={subtask.completed}
                   onChange={() => handleToggleSubtask(subtask.id)}
+                  style={{ transform: isMobile ? 'scale(1.1)' : 'none' }}
                 />
                 <Input
                   value={subtask.title}
@@ -227,7 +250,9 @@ export const TaskModal = ({ taskId, visible, onClose }) => {
                     boxShadow: 'none',
                     padding: 0,
                     textDecoration: subtask.completed ? 'line-through' : 'none',
-                    color: subtask.completed ? 'var(--text-tertiary)' : 'var(--text-primary)'
+                    color: subtask.completed ? 'var(--text-tertiary)' : 'var(--text-primary)',
+                    fontSize: '14px',
+                    height: 'auto'
                   }}
                 />
                 <Button
@@ -236,6 +261,13 @@ export const TaskModal = ({ taskId, visible, onClose }) => {
                   icon={<DeleteOutlined />}
                   size="small"
                   onClick={() => handleDeleteSubtask(subtask.id)}
+                  style={{ 
+                    width: isMobile ? '36px' : '24px', 
+                    height: isMobile ? '36px' : '24px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center' 
+                  }}
                 />
               </div>
             ))}
@@ -248,13 +280,26 @@ export const TaskModal = ({ taskId, visible, onClose }) => {
               value={subtaskTitle}
               onChange={(e) => setSubtaskTitle(e.target.value)}
               prefix={<PlusOutlined style={{ color: 'var(--text-tertiary)' }} />}
-              style={{ borderRadius: '6px' }}
+              style={{ borderRadius: '6px', height: isMobile ? '44px' : '36px' }}
             />
-            <Button type="primary" htmlType="submit" icon={<PlusOutlined />} />
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              icon={<PlusOutlined />} 
+              style={{ 
+                height: isMobile ? '44px' : '36px', 
+                width: isMobile ? '44px' : '36px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center' 
+              }}
+            />
           </form>
         </div>
       </div>
     </Drawer>
   );
 };
+
 export default TaskModal;
+

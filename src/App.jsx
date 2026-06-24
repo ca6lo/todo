@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { ConfigProvider, theme } from 'antd';
 import { TaskProvider, TaskContext } from './context/TaskContext';
 import { Dashboard } from './pages/Dashboard';

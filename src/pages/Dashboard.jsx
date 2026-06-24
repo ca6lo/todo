@@ -1,6 +1,6 @@
-import React, { useState, useContext, useMemo } from 'react';
-import { Layout, Input, Button, Collapse, Empty, Drawer, FloatButton } from 'antd';
-import { PlusOutlined, MenuOutlined, CheckCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { useState, useContext, useMemo } from 'react';
+import { Layout, Input, Button, Collapse, Empty, Drawer, FloatButton, Grid } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { TaskContext } from '../context/TaskContext';
 import { Sidebar } from '../components/Sidebar/Sidebar';
@@ -12,7 +12,7 @@ import { useKeyboard } from '../hooks/useKeyboard';
 import dayjs from 'dayjs';
 
 const { Content } = Layout;
-const { Panel } = Collapse;
+const { useBreakpoint } = Grid;
 
 export const Dashboard = () => {
   const {
@@ -26,6 +26,10 @@ export const Dashboard = () => {
     createTask,
     reorderTasks
   } = useContext(TaskContext);
+
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
+  const isXs = !screens.sm;
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -186,7 +190,7 @@ export const Dashboard = () => {
     <Layout style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Top Header Bar */}
       <Header onMenuToggle={() => {
-        if (window.innerWidth < 768) {
+        if (isMobile) {
           setMobileSidebarOpen(prev => !prev);
         } else {
           setSidebarCollapsed(prev => !prev);
@@ -196,18 +200,19 @@ export const Dashboard = () => {
       {/* Main Content Layout */}
       <Layout style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
         {/* Desktop Sidebar Sider */}
-        <Sidebar 
-          collapsed={sidebarCollapsed} 
-        />
+        {!isMobile && (
+          <Sidebar 
+            collapsed={sidebarCollapsed} 
+          />
+        )}
 
         {/* Mobile Sider Drawer wrapper */}
         <Drawer
           placement="left"
           onClose={() => setMobileSidebarOpen(false)}
           open={mobileSidebarOpen}
-          width={280}
-          bodyStyle={{ padding: 0 }}
-          headerStyle={{ display: 'none' }}
+          style={{ width: 280 }}
+          styles={{ body: { padding: 0 }, header: { display: 'none' } }}
         >
           <Sidebar 
             collapsed={false} 
@@ -222,12 +227,24 @@ export const Dashboard = () => {
           <Filters />
 
           {/* Task Feed Layout */}
-          <Content style={{ padding: '24px', overflowY: 'auto', flex: 1, position: 'relative' }}>
+          <Content style={{ padding: isMobile ? '16px' : '24px', overflowY: 'auto', flex: 1, position: 'relative' }}>
             <div style={{ maxWidth: '720px', margin: '0 auto' }}>
               
               {/* Active List Heading */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-                <h1 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--text-primary)' }}>
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: isXs ? 'column' : 'row',
+                alignItems: isXs ? 'stretch' : 'center',
+                justifyContent: 'space-between', 
+                marginBottom: '20px',
+                gap: isXs ? '12px' : '0px'
+              }}>
+                <h1 style={{ 
+                  fontSize: isXs ? '20px' : '24px', 
+                  fontWeight: 600, 
+                  color: 'var(--text-primary)',
+                  margin: 0
+                }}>
                   {searchQuery.trim() ? `Search results for "${searchQuery}"` : (activeList ? activeList.name : 'Tasks')}
                 </h1>
                 {!searchQuery.trim() && (
@@ -236,7 +253,8 @@ export const Dashboard = () => {
                     shape="round"
                     icon={<PlusOutlined />}
                     onClick={handleOpenNewTaskDrawer}
-                    style={{ fontWeight: 500 }}
+                    style={{ fontWeight: 500, height: isMobile ? '44px' : '32px' }}
+                    className={isXs ? 'mobile-full-width' : ''}
                   >
                     Add Task
                   </Button>
@@ -252,7 +270,7 @@ export const Dashboard = () => {
                     onChange={(e) => setQuickTitle(e.target.value)}
                     style={{
                       borderRadius: '12px',
-                      height: '48px',
+                      height: isMobile ? '48px' : '44px',
                       fontSize: '15px',
                       padding: '0 16px',
                       backgroundColor: 'var(--bg-primary)',
@@ -306,27 +324,29 @@ export const Dashboard = () => {
                   ghost
                   style={{ marginTop: '24px', borderTop: '1px solid var(--border-color)' }}
                   defaultActiveKey={['completed-section']}
-                >
-                  <Panel 
-                    header={
-                      <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>
-                        Completed ({completedTasks.length})
-                      </span>
-                    } 
-                    key="completed-section"
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                      {completedTasks.map((task, index) => (
-                        <TaskCard
-                          key={task.id}
-                          task={task}
-                          index={index}
-                          onEditClick={handleEditClick}
-                        />
-                      ))}
-                    </div>
-                  </Panel>
-                </Collapse>
+                  items={[
+                    {
+                      key: 'completed-section',
+                      label: (
+                        <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>
+                          Completed ({completedTasks.length})
+                        </span>
+                      ),
+                      children: (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          {completedTasks.map((task, index) => (
+                            <TaskCard
+                              key={task.id}
+                              task={task}
+                              index={index}
+                              onEditClick={handleEditClick}
+                            />
+                          ))}
+                        </div>
+                      )
+                    }
+                  ]}
+                />
               )}
             </div>
           </Content>
@@ -337,7 +357,7 @@ export const Dashboard = () => {
       <FloatButton
         icon={<PlusOutlined />}
         type="primary"
-        style={{ right: 24, bottom: 24, display: window.innerWidth < 768 ? 'block' : 'none' }}
+        style={{ right: 24, bottom: 24, display: isMobile ? 'block' : 'none' }}
         onClick={handleOpenNewTaskDrawer}
       />
 
